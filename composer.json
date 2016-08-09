@@ -1,7 +1,8 @@
 {
-  "name": "malyusha/kodidx",
+  "name": "malyusha/kodix",
   "description": "Helpers for Kodix",
   "license": "MIT",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Igor Malyuk",
