@@ -274,3 +274,14 @@ if(! function_exists('remove_cms_headers')) {
         header_remove('X-Powered-By');
     }
 }
+
+if(!function_exists('is_ajax')) {
+    /**
+     * Проверяет является ли текущий запрос ajax-ом
+     *
+     * @return bool
+     */
+    function is_ajax() {
+        return strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+}
