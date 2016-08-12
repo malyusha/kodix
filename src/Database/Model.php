@@ -631,6 +631,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             return new Carbon($value->format($this->getDateFormat()), $value->getTimeZone());
         }
 
+        if (class_exists('Bitrix\Main\Type\Date') && $value instanceof \Bitrix\Main\Type\Date) {
+            return new Carbon($value->format($this->getDateFormat()));
+        }
+
         // If this value is an integer, we will assume it is a UNIX timestamp's value
         // and format a Carbon object from this timestamp. This allows flexibility
         // when defining your date fields as they might be UNIX timestamps here.
