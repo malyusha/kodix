@@ -85,10 +85,15 @@ class BelongsToMany extends Relation
             $collection = [];
             $keys = $model->getAttribute($this->foreignKey);
 
+            // Нам нужно сохранить порядок сортировки отношения, поэтому мы не можем просто пройти
+            // по ключам моделей. Нужно выполнить сравнение всех ключей и ключей конкретной модели
+            // и оставить порядок из ключей отношений.
+            $diffKeys = array_intersect(array_keys($dictionary), $keys);
+
             // Здесь хранится множественное свойство, поэтому оно будет массивом из
             // ключей дочерних моделей. Значит мы просто пройдемся по каждому ключу, и если
             // обнаружим в словаре моделей такую запись - то доавбим в коллекцию дочерних моделей.
-            foreach ((array)$keys as $key) {
+            foreach ((array)$diffKeys as $key) {
                 if(isset($dictionary[$key])) {
                     $collection[] = $dictionary[$key];
                 }
