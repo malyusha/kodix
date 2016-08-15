@@ -148,7 +148,13 @@ class BelongsToMany extends Relation
         $keys = [];
 
         foreach ($models as $model) {
-            $keys = array_merge($keys, $model->getAttribute($key));
+            $attribute = (array)$model->getAttribute($key);
+
+            if(count($attribute) === 0) {
+                continue;
+            }
+
+            $keys = array_merge($keys, $attribute);
         }
 
         return array_unique(array_values($keys));
