@@ -9,6 +9,7 @@
 namespace Kodix\Support\Components;
 
 use CPHPCache;
+use CBitrixComponent;
 
 abstract class Component extends CBitrixComponent
 {
