@@ -1,33 +1,52 @@
 <?php
+/**
+ * Created by Kodix.
+ * Developer: Igor Malyuk
+ * Email: support@kodix.ru
+ * Date: 15.08.16
+ */
 
-
-namespace Kodix\Support\Traits\Component;
+namespace Kodix\Support\Components;
 
 use CPHPCache;
 
-/**
- * Трейт для использования в классах компонента.
- * Облегчает постоянное написание одних и тех же prepare методов
- *
- * Trait PreparingComponent
- *
- * @package Kodix\Support\Traits
- * @link https://packagist.org/packages/malyusha/bitrix-helpers
- * @link https://github.com/malyusha/bitrix-helpers
- *
- * @property string cacheTag Имя тега для кеширования
- * @property bool active Флаг необходимости фильтрации по активности
- * @property bool useCache Флаг необходимости использования кеширования результата
- * @property bool cacheGallery Флаг необходимости добавления разрешения в id кеша
- * @property bool dateFilter Флаг необходимости фильтрации по датам начала и конца активности
- * @property array resizeSizes Размер ресайзнутых картинок, формат ресайза см. в свойстве defaultSizes
- *
- * @method static withoutCache() Метод, выполняющий действия после кеширования, если оно включено
- * @method static additionalPrepares() Дополнительные дейтсвия перед подготовкой результата
- * @method static beforePrepare() Действия, которые будут выполнены перед всеми подготовками
- */
-trait PreparingComponent
+abstract class Component extends CBitrixComponent
 {
+    /**
+     * Имя тега для кеширования.
+     *
+     * @var string
+     */
+    protected $cacheTag = 'default';
+
+    /**
+     * Флаг необходимости фильтрации по активности.
+     *
+     * @var bool
+     */
+    protected $active = true;
+
+    /**
+     * Флаг необходимости использования кеширования результата.
+     *
+     * @var bool
+     */
+    protected $useCache = true;
+
+    /**
+     * Флаг необходимости добавления разрешения в id кеша.
+     *
+     * @var bool
+     */
+    protected $cacheGallery = false;
+
+    /**
+     * Флаг необходимости фильтрации по датам начала и конца активности.
+     *
+     * @var bool
+     */
+    protected $dateFilter = true;
+
     /**
      * @var array
      */
@@ -74,12 +93,14 @@ trait PreparingComponent
      */
     protected $elements;
 
+    protected $cachePath = 'default';
+
     /**
      * Стандартные размеры для ресайза
      *
      * @var array $defaultSizes
      */
-    protected $defaultSizes = [
+    protected $resizeSizes = [
         'mobile' => [
             'preview' => [
                 'width' => 200,
@@ -162,7 +183,7 @@ trait PreparingComponent
     {
         $this->sort = [$this->arParams['SORT_BY'] => $this->arParams['SORT_ORDER']];
 
-        if(empty($this->sort)) {
+        if(count($this->sort) === 0) {
             $this->sort = ['ID' => 'ASC'];
         }
     }
@@ -174,8 +195,8 @@ trait PreparingComponent
      */
     public function prepareFilter()
     {
-        $active = $this->getDefaultProperty('active');
-        $dateFilter = $this->getDefaultProperty('dateFilter');
+        $active = $this->active;
+        $dateFilter = $this->dateFilter;
 
         $filter = [
             'IBLOCK_TYPE' => $this->blockType,
@@ -290,7 +311,7 @@ trait PreparingComponent
         $this->componentName = $this->getName();
         $cacheTime = $this->arParams['CACHE_TIME'];
         $this->templateName = $this->getTemplateName() ?: 'default';
-        $cachePath = $this->cachePath() . '/' . replace_signs($this->componentName) . '/' . replace_signs($this->templateName);
+        $cachePath = $this->cachePath . '/' . replace_signs($this->componentName) . '/' . replace_signs($this->templateName);
         $res = [];
 
         if($cacheTime > 0 && $cache->InitCache($cacheTime, $cacheId, $cachePath)) {
@@ -304,7 +325,7 @@ trait PreparingComponent
         if(!is_array($res['result'])) {
             $this->makeResult();
 
-            $CACHE_MANAGER->RegisterTag($this->getDefaultProperty('cacheTag', 'default'));
+            $CACHE_MANAGER->RegisterTag($this->cacheTag);
             $CACHE_MANAGER->EndTagCache();
 
             $cache->StartDataCache($cacheTime, $cacheId, $cachePath);
@@ -339,9 +360,9 @@ trait PreparingComponent
      */
     public function prepareResult()
     {
-        if($this->getDefaultProperty('useCache') || $this->componentWantsCache()) {
+        if($this->useCache || $this->componentWantsCache()) {
             //Если галерея будет кешироваться
-            if($this->getDefaultProperty('cacheGallery')) {
+            if($this->cacheGallery) {
                 //Добавляем код разрешения экрана в путь кеширования
                 //потому что иначе, мы будем кешировать всю галерею
                 //для всех устройств одинаково
@@ -371,7 +392,7 @@ trait PreparingComponent
         $gallery = [];
         $merge = is_array($toMerge) ? $toMerge : [$toMerge];
         $sizeLabel = get_screen_label();
-        $allSizes = $this->getDefaultProperty('resizeSizes', $this->defaultSizes);
+        $allSizes = $this->resizeSizes;
         $sizes = [
             'preview' => $allSizes[$sizeLabel]['preview'],
             'detail' => $allSizes[$sizeLabel]['detail'],
@@ -403,23 +424,32 @@ trait PreparingComponent
      */
     public function boot()
     {
-        if(method_exists($this, 'beforePrepare')) {
-            call_user_func([$this, 'beforePrepare']);
-        }
+        $this->beforePrepare();
         $this->prepareSort();
         $this->prepareNav();
         $this->prepareSelect();
         $this->prepareFilter();
-        if(method_exists($this, 'additionalPrepares')) {
-            call_user_func([$this, 'additionalPrepares']);
-        }
+        $this->additionalPrepares();
         $this->prepareResult();
 
         //Тут будет вызван метод, результаты которого не подлежат кешированию
         //Поэтому если кеширование включено не создавайте его в классе
-        if(method_exists($this, 'withoutCache')) {
-            call_user_func([$this, 'withoutCache']);
-        }
+        $this->withoutCache();
+    }
+
+    public function withoutCache()
+    {
+        //
+    }
+
+    public function additionalPrepares()
+    {
+        //
+    }
+
+    public function beforePrepare()
+    {
+        //
     }
 
     /**
@@ -483,22 +513,6 @@ trait PreparingComponent
     }
 
     /**
-     * Выполняет проверку на существование переданного свойства.
-     * Если такое свойство существует, то вернет его значение,
-     * иначе, если не передан второй параметр, вернет значение для флаговых свойств по умолчанию.
-     * См. свойство defaultPropertiesFlag
-     *
-     * @param $propertyName
-     * @return bool
-     */
-    protected function getDefaultProperty($propertyName, $defaultValue = null)
-    {
-        $default = !is_null($defaultValue) ? $defaultValue : $this->defaultPropertiesFlag;
-
-        return property_exists($this, $propertyName) ? $this->$propertyName : $default;
-    }
-
-    /**
      * Проверяет установлено ли время кеширования в параметрах компонента
      *
      * @return bool
@@ -513,12 +527,5 @@ trait PreparingComponent
      * В этом методе вы должы реализовать наполнение массива $arResult
      */
     abstract public function makeResult();
-
-    /**
-     * Должен возвращать корневую папку с кешем компонентов
-     *
-     * @return string
-     */
-    abstract public function cachePath();
 
 }
