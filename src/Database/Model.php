@@ -1309,9 +1309,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         // Если аттрибут это дата, то мы переведем его в DateTime / Carbon
         // объекты. Сделано это для того, чтобы в виде массив / JSON объекта
-        // мы получали отформатированную дату
+        // мы получали отформатированную дату.
         foreach ($this->getDates() as $key) {
-            if (!isset($attributes[$key])) {
+            if (!isset($attributes[$key]) || !$attributes[$key]) {
                 continue;
             }
 
