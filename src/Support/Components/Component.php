@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by Kodix.
- * Developer: Igor Malyuk
- * Email: support@kodix.ru
- * Date: 15.08.16
- */
 
 namespace Kodix\Support\Components;
 
@@ -81,13 +75,6 @@ abstract class Component extends CBitrixComponent
     protected $nav = [];
 
     /**
-     * ID инфоблока элементов
-     *
-     * @var int $blockId
-     */
-    protected $blockId = 0;
-
-    /**
      * Массив выбранных элементов
      *
      * @var array $elements
@@ -142,13 +129,6 @@ abstract class Component extends CBitrixComponent
     protected $defaultPropertiesFlag = true;
 
     /**
-     * Тип ифноблока
-     *
-     * @var string $blockType
-     */
-    protected $blockType;
-
-    /**
      * Название компонента
      *
      * @var string $componentName
@@ -200,8 +180,8 @@ abstract class Component extends CBitrixComponent
         $dateFilter = $this->dateFilter;
 
         $filter = [
-            'IBLOCK_TYPE' => $this->blockType,
-            'IBLOCK_ID' => $this->blockId,
+            'IBLOCK_TYPE' => $this->arParams['IBLOCK_TYPE'],
+            'IBLOCK_ID' => $this->arParams['IBLOCK_ID'],
         ];
 
         if($active) {
