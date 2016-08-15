@@ -159,14 +159,35 @@ class BelongsToMany extends Relation
      */
     public function attach($keys)
     {
+        return $this->attachOrDetach($keys);
+    }
+
+    /**
+     * Удаляет из родительской модели привязки к дочерним.
+     *
+     * @param array|Collection|Model $keys
+     * @return bool
+     */
+    public function detach($keys)
+    {
+        return $this->attachOrDetach($keys, false);
+    }
+
+    /**
+     * @param $keys
+     * @param bool $attach
+     * @return bool
+     */
+    protected function attachOrDetach($keys, $attach = true)
+    {
         $parent = $this->getParent();
 
         $keys = $this->getArrayableKeys($keys);
         $ids = $parent->getAttribute($this->foreignKey);
 
-        $attach = array_unique(array_merge($keys, $ids));
-        
-        $parent->setAttribute($this->foreignKey, $attach);
+        $related = $attach ? array_unique(array_merge($keys, $ids)) : array_diff($ids, $keys);
+
+        $parent->setAttribute($this->foreignKey, $related);
 
         return $parent->save();
     }
