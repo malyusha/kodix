@@ -177,6 +177,10 @@ class BelongsToMany extends Relation
             return $keys;
         }
 
+        if($keys instanceof Model) {
+            return [$keys->getKey()];
+        }
+
         if($keys instanceof Collection) {
             return $keys->modelKeys();
         }
