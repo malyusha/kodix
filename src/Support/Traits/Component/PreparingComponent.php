@@ -286,7 +286,7 @@ trait PreparingComponent
         global $CACHE_MANAGER;
 
         $cache = new CPHPCache();
-        $cacheId = $this->getCacheId();
+        $cacheId = $this->getCacheableId();
         $this->componentName = $this->getName();
         $cacheTime = $this->arParams['CACHE_TIME'];
         $this->templateName = $this->getTemplateName() ?: 'default';
@@ -317,7 +317,7 @@ trait PreparingComponent
      *
      * @return string
      */
-    protected function getCacheId()
+    protected function getCacheableId()
     {
         return md5($this->getTemplateName() . serialize($this->arParams) . serialize($this->additionalCachePath));
     }
