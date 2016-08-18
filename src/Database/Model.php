@@ -1244,7 +1244,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         return $this->where($key, $this->getKey())->first($columns);
     }
 
-    protected function resyncFiles()
+    public function resyncFiles()
     {
         $this->files = $this->originalFiles;
 
