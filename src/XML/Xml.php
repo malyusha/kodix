@@ -5,6 +5,7 @@ namespace Kodix\XML;
 
 use DOMDocument;
 use DOMElement;
+use Kodix\Support\Arr;
 
 abstract class Xml
 {
@@ -61,18 +62,37 @@ abstract class Xml
      */
     public function addData($parent, $data)
     {
-        foreach($data as $code => $value) {
-            if( is_array($value) ) {
-                $code = $value['code'] ?: $code;
-                $value = $value['data'] ?: $value;
+        foreach($data as $value) {
+            $isNested = !isset($value['value']);
+            if( is_array($value['value']) || $isNested) {
+                if($isNested) {
+                    $this->addData($parent, $value);
+                    continue;
+                }
+
+                $code = $value['title'];
+                $value = $value['value'];
                 $newParent = $this->xml->createElement($code);
                 $parent->appendChild($this->addData($newParent, $value));
             } else {
-                $element = $this->xml->createElement($code, trim($value));
+                $element = $this->xml->createElement($value['title'], trim($value['value']));
                 $parent->appendChild($element);
             }
         }
 
         return $parent;
+    }
+
+    /**
+     * @param $title
+     * @param $data
+     * @return array
+     */
+    protected function addElement($title, $data)
+    {
+        return [
+            'title' => $title,
+            'value' => $data
+        ];
     }
 }
