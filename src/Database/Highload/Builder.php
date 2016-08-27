@@ -1050,7 +1050,8 @@ class Builder
     public function groupBy($field)
     {
         $field = is_string($field) ? func_get_args() : $field;
-        $this->group = $field;
+
+        $this->group = $this->model->normalizeKey($field);
 
         return $this;
     }
