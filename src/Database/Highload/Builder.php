@@ -30,6 +30,13 @@ class Builder
     public $filter = [];
 
     /**
+     * Параметр группировки запроса.
+     *
+     * @var array
+     */
+    public $group = [];
+
+    /**
      * Порядок сортировки
      *
      * @var array $order
@@ -1035,6 +1042,17 @@ class Builder
     public function newBuilder()
     {
         return new static($this->manager);
+    }
+
+    /**
+     * @param array|string $field
+     */
+    public function groupBy($field)
+    {
+        $field = is_string($field) ? func_get_args() : $field;
+        $this->group = $field;
+
+        return $this;
     }
 
     /**
