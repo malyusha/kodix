@@ -74,7 +74,7 @@ abstract class Parser
     {
         $info = pathinfo($file);
 
-        if(!preg_match('/(' . implode('|', $this->extensions) . ')/', $info['extension'])) {
+        if(!preg_match('/\.(' . implode('|', $this->extensions) . ')$/', $info['extension'])) {
             throw new IncorrectFileExtension($file, $this->extensions);
         }
     }
