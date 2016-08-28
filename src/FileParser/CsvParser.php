@@ -45,15 +45,18 @@ abstract class CsvParser extends Parser
     {
         $result = [];
         $headers = $this->getHeaders();
+        $hasHeader = count($headers) !== 0;
 
         while(($row = fgetcsv($this->file, $this->length, $this->delimiter)) !== false) {
-            $this->iterateCounter();
+            if($hasHeader) {
+                $this->iterateCounter();
 
-            if($this->isIgnored()) {
-                continue;
+                if($this->isIgnored()) {
+                    continue;
+                }
             }
 
-            $result[] = array_combine($headers, $row);
+            $result[] = $hasHeader ? array_combine($headers, $row) : $row;
         }
 
         return new Collection($result);

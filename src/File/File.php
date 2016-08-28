@@ -18,6 +18,11 @@ class File
         $this->file = fopen($file, static::OPEN_MODE);
     }
 
+    public function resource()
+    {
+        return $this->file;
+    }
+
     public function append($text)
     {
         $text = date('d.m.Y H:i:s') . ' ' . $text;
