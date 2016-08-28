@@ -48,6 +48,7 @@ abstract class CsvParser extends Parser
         $hasHeader = count($headers) !== 0;
 
         while(($row = fgetcsv($this->file, $this->length, $this->delimiter)) !== false) {
+            // Если установлены заголовки
             if($hasHeader) {
                 $this->iterateCounter();
 
@@ -60,6 +61,26 @@ abstract class CsvParser extends Parser
         }
 
         return new Collection($result);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDelimiter()
+    {
+        return $this->delimiter;
+    }
+
+    /**
+     * @param $index
+     *
+     * @return $this
+     */
+    public function setStartPosition($index)
+    {
+        $this->startFrom = $index;
+
+        return $this;
     }
 
     /**
