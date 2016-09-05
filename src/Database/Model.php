@@ -145,6 +145,13 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     protected $original = [];
 
     /**
+     * Заполняемые атрибуты модели.
+     *
+     * @var array
+     */
+    protected $fillable = [];
+
+    /**
      * Поля модели, которые должны быть преобразованы к определенным типам
      *
      * @var array
@@ -273,6 +280,62 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+     * Получает заполняемые атрибуты в модели.
+     *
+     * @return array
+     */
+    public function getFillable()
+    {
+        return $this->fillable;
+    }
+
+    /**
+     * Устанавливает заполняемые атрибуты в модели.
+     *
+     * @param  array  $fillable
+     * @return $this
+     */
+    public function fillable(array $fillable)
+    {
+        $this->fillable = $fillable;
+
+        return $this;
+    }
+
+    /**
+     * Determine if the given attribute may be mass assigned.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function isFillable($key)
+    {
+        // If the key is in the "fillable" array, we can of course assume that it's
+        // a fillable attribute. Otherwise, we will check the guarded array when
+        // we need to determine if the attribute is black-listed on the model.
+        if (in_array($key, $this->getFillable())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the fillable attributes of a given array.
+     *
+     * @param  array  $attributes
+     * @return array
+     */
+    protected function fillableFromArray(array $attributes)
+    {
+        if (count($this->getFillable()) > 0) {
+            return array_intersect_key($attributes, array_flip($this->getFillable()));
+        }
+
+        return $attributes;
+    }
+
+    /**
      * Загрузочный метод модели
      */
     protected static function boot()
@@ -287,8 +350,11 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function fill(array $attributes)
     {
+        $attributes = $this->denormalizeArrayAttributes($attributes);
         foreach ($attributes as $key => $value) {
-            $this->setAttribute($key, $value);
+            if($this->isFillable($key)) {
+                $this->setAttribute($key, $value);
+            }
         }
 
         return $this;
