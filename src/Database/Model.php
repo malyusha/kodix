@@ -317,7 +317,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             return true;
         }
 
-        return false;
+        return count($this->getFillable()) === 0;
     }
 
     /**
