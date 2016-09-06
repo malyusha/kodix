@@ -351,7 +351,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     public function fill(array $attributes)
     {
         $attributes = $this->denormalizeArrayAttributes($attributes);
-        foreach ($this-$this->fillableFromArray($attributes) as $key => $value) {
+        foreach ($this->fillableFromArray($attributes) as $key => $value) {
             if($this->isFillable($key)) {
                 $this->setAttribute($key, $value);
             }
