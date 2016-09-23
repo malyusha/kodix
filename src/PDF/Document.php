@@ -31,13 +31,13 @@ abstract class Document extends PDF implements PDFInterface
 
     protected $data = [];
 
-    public function __construct($file, $data)
+    public function __construct($file, $data, $options = [])
     {
         $this->data = $data;
         $this->baseDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $this->baseDir;
         $this->createBaseDirectoryIfNotExists();
 
-        parent::__construct($file);
+        parent::__construct($file, $options = []);
     }
 
     public function send()

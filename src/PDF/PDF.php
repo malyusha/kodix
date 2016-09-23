@@ -19,19 +19,29 @@ abstract class PDF extends Dompdf
     protected $file;
 
     protected $assetsPath;
+    
+    protected $fontDir;
 
     public function __construct($htmlFile)
     {
+        $options = [];
         $this->setWebPath($this->getFilePath($htmlFile));
         $this->setAssetsPath($this->getFilePath($htmlFile));
         $this->setDocumentsPath($this->getFilePath($htmlFile));
         $this->setFile($htmlFile);
+        
+        if($this->fontDir) {
+            $options = [
+                'font_dir' => $this->fontDir,
+                'font_cache' => $this->fontDir,
+            ];
+        }
 
         if(!file_exists($this->file)) {
             throw new FileNotFoundException($this->file);
         }
 
-        parent::__construct();
+        parent::__construct($options);
 
         $this->_paper_size = self::PAGE_SIZE;
     }
