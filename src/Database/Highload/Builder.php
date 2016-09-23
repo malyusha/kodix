@@ -1062,7 +1062,7 @@ class Builder
      * @link https://dev.1c-bitrix.ru/learning/course/?COURSE_ID=43&LESSON_ID=5753
      *
      * @return array
-     */
+     */ 
     protected function getPreparedParameters()
     {
         if (!empty($this->parameters)) {
