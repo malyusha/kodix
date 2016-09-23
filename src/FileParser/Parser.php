@@ -45,7 +45,7 @@ abstract class Parser
         $this->file = fopen($this->filePath, static::FILE_READ_MODE);
 
         $this->parsedData = $this->getParsedData();
-        
+
         fclose($this->file);
 
         return $this;
@@ -74,7 +74,7 @@ abstract class Parser
     {
         $info = pathinfo($file);
 
-        if(!preg_match('/\.(' . implode('|', $this->extensions) . ')$/', $info['extension'])) {
+        if(!in_array($info['extension'], $this->extensions)) {
             throw new IncorrectFileExtension($file, $this->extensions);
         }
     }
