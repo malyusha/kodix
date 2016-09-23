@@ -1071,7 +1071,7 @@ class Builder
         }
 
         //Закешируем параметры для дальнейших выборок
-        foreach (['select', 'filter', 'group', 'order', 'limit'] as $field) {
+        foreach (['select', 'filter', 'group', 'order', 'limit', 'offset'] as $field) {
             $property = $this->$field;
             //Тут проверим, есть ли что-либо в параметрах
             //Если нет, то просто идем дальше
