@@ -259,7 +259,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @var DataManager
      */
-    protected $manager;
+    protected static $manager;
 
     /**
      * Тип первичного ключа модели
@@ -749,6 +749,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Возвращает новый билдер для таблицы модели
      *
      * @return Builder
+     * @throws \Kodix\Database\Highload\ManagerException
      */
     public function newBuilder()
     {
@@ -779,8 +780,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function newManager()
     {
-        if ($this->manager) {
-            return $this->manager;
+        if (static::$manager) {
+            return static::$manager;
         }
 
         try {
@@ -790,7 +791,17 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             throw new ManagerException("Can not create manager for model with table {$this->table}");
         }
 
-        return $this->manager = new $table;
+        return static::$manager = new $table;
+    }
+
+    /**
+     * Returns manager for bitrix queries.
+     *
+     * @return \Bitrix\Main\Entity\DataManager
+     */
+    public function getManager()
+    {
+        return $this->newManager();
     }
 
     /**

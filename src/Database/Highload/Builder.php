@@ -1037,15 +1037,9 @@ class Builder
     }
 
     /**
-     * @return static
-     */
-    public function newBuilder()
-    {
-        return new static($this->manager);
-    }
-
-    /**
      * @param array|string $field
+     *
+     * @return Builder
      */
     public function groupBy($field)
     {
@@ -1054,6 +1048,16 @@ class Builder
         $this->group = $this->model->normalizeKey($field);
 
         return $this;
+    }
+
+    /**
+     * Returns bitrix manager for query builder.
+     *
+     * @return \Bitrix\Main\Entity\DataManager
+     */
+    public function getManager()
+    {
+        return $this->manager;
     }
 
     /**
