@@ -259,7 +259,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @var DataManager
      */
-    protected static $manager;
+    protected  $manager;
 
     /**
      * Тип первичного ключа модели
@@ -780,8 +780,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function newManager()
     {
-        if (static::$manager) {
-            return static::$manager;
+        if ($this->manager) {
+            return $this->manager;
         }
 
         try {
@@ -791,7 +791,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             throw new ManagerException("Can not create manager for model with table {$this->table}");
         }
 
-        return static::$manager = new $table;
+        return $this->manager = new $table;
     }
 
     /**
