@@ -1049,16 +1049,7 @@ class Builder
 
         return $this;
     }
-
-    /**
-     * Returns bitrix manager for query builder.
-     *
-     * @return \Bitrix\Main\Entity\DataManager
-     */
-    public function getManager()
-    {
-        return $this->manager;
-    }
+    
 
     /**
      * Возвращает подготовленные параметры для выборки
