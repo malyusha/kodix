@@ -100,6 +100,11 @@ class Builder
     protected $files = [];
 
     /**
+     * @var bool
+     */
+    protected $loadFiles = true;
+
+    /**
      * Сформированные параметры запроса
      *
      * @var array $parameters
@@ -667,7 +672,7 @@ class Builder
 
         if (count($models) > 0) {
             $models = $this->eagerLoadRelations($models);
-            $models = $this->hasFiles() ? $this->eagerLoadFiles($models) : $models;
+            $models = $this->needToLoadFiles() && $this->hasFiles() ? $this->eagerLoadFiles($models) : $models;
         }
 
         return $this->getModel()->newCollection($models);
@@ -850,6 +855,16 @@ class Builder
         $dots = Str::contains($name, '.');
 
         return $dots && Str::startsWith($name, $relation . '.');
+    }
+
+    /**
+     * Определяет нужно ли загружать файлы.
+     *
+     * @return bool
+     */
+    protected function needToLoadFiles()
+    {
+        return $this->loadFiles;
     }
 
     /**
@@ -1046,6 +1061,13 @@ class Builder
         $field = is_string($field) ? func_get_args() : $field;
 
         $this->group = $this->model->normalizeKey($field);
+
+        return $this;
+    }
+
+    public function withoutFiles()
+    {
+        $this->loadFiles = false;
 
         return $this;
     }
